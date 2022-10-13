@@ -1,0 +1,55 @@
+$titleHeight: 36px;
+
+.sticky-note {
+  &-container {
+    position: relative;
+    background-color: white;
+    width: 240px;
+  }
+
+  &-title {
+    height: calc($titleHeight + 1px);
+    line-height: $titleHeight;
+    background-color: #d9d9d9;
+    text-align: start;
+    vertical-align: middle;
+
+    .MuiInput-root:before {
+      border: none;
+    }
+
+    .MuiInput-root:hover:not(.Mui-disabled):before {
+      border: none;
+    }
+
+    &-input {
+      height: $titleHeight;
+      padding: 0 6px;
+  
+      & .MuiInput-input {
+        font-size: 20px;
+      }
+    }
+  }
+
+  &-content {
+    height: 200px;
+    .MuiInputBase-multiline {
+      &:after {
+        border-bottom: none,
+      }
+
+      &:before {
+        border: none;
+      }
+
+      &:hover:not(.Mui-disabled):before {
+        border: none;
+      }
+
+      .MuiInputBase-inputMultiline {
+        padding: 2px 6px;
+      }
+    }
+  }
+}
