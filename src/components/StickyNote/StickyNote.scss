@@ -14,12 +14,18 @@ $titleHeight: 36px;
     text-align: start;
     vertical-align: middle;
 
-    .MuiInput-root:before {
-      border: none;
-    }
+    .MuiInput-root {
+      .MuiInput-input {
+        width: 200px;
+      }
 
-    .MuiInput-root:hover:not(.Mui-disabled):before {
-      border: none;
+      &:before {
+        border: none;
+      }
+
+      &:hover:not(.Mui-disabled):before {
+        border: none;
+      }
     }
 
     &-input {
@@ -30,6 +36,12 @@ $titleHeight: 36px;
         font-size: 20px;
       }
     }
+  }
+
+  &-more {
+    z-index: 2;
+    height: $titleHeight;
+    width: $titleHeight;
   }
 
   &-content {
