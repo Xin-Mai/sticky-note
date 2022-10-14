@@ -64,6 +64,7 @@ class StickyNote extends React.Component<Props, State> {
   handleBlur = (e: React.FocusEvent) => {
     if (e.relatedTarget) {
       e.preventDefault();
+      this.handleChange({ firstFoucus: e.relatedTarget.id || 'title-input'});
     } else {
       this.handleChange({ editable: false, firstFoucus: '' });
     }
