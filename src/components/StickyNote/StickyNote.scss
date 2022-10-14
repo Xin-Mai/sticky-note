@@ -5,6 +5,7 @@ $titleHeight: 36px;
     position: relative;
     background-color: white;
     width: 240px;
+    cursor: pointer;
   }
 
   &-title {
@@ -13,10 +14,12 @@ $titleHeight: 36px;
     background-color: #d9d9d9;
     text-align: start;
     vertical-align: middle;
+    cursor: inherit;
 
     .MuiInput-root {
       .MuiInput-input {
         width: 200px;
+        padding: 0;
       }
 
       &:before {
@@ -28,12 +31,21 @@ $titleHeight: 36px;
       }
     }
 
+    .Mui-disabled:before {
+      border-bottom: none;
+      border-bottom-style: none !important;
+    }
+
     &-input {
       height: $titleHeight;
       padding: 0 6px;
   
       & .MuiInput-input {
         font-size: 20px;
+      }
+
+      input:disabled {
+        cursor: pointer;
       }
     }
   }
@@ -46,6 +58,8 @@ $titleHeight: 36px;
 
   &-content {
     height: 200px;
+    cursor: inherit;
+    
     .MuiInputBase-multiline {
       &:after {
         border-bottom: none,
@@ -53,6 +67,7 @@ $titleHeight: 36px;
 
       &:before {
         border: none;
+        border-bottom: none !important;
       }
 
       &:hover:not(.Mui-disabled):before {
@@ -62,6 +77,10 @@ $titleHeight: 36px;
       .MuiInputBase-inputMultiline {
         padding: 2px 6px;
       }
+    }
+
+    textarea:disabled {
+      cursor: pointer;
     }
   }
 }

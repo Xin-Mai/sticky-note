@@ -13,7 +13,6 @@ class Clock extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    console.log(props);
     this.state = {
       date: new Date(),
     };
@@ -36,7 +35,10 @@ class Clock extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     return (
-      <div>
+      <div style={{
+        position: 'fixed',
+        margin: 'auto',
+      }}>
         <h1>{ this.state.date.toLocaleTimeString() }</h1>
       </div>
     )
