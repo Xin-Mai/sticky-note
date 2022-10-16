@@ -76,7 +76,7 @@ class StickyNote extends React.Component<Props, State> {
     };
 
     return (
-      <Draggable>
+      <Draggable defaultPosition={{ x:0, y:0}}>
         <div className="sticky-note-container"
           onDoubleClickCapture={ this.handleEditable }
           onBlur={ this.handleBlur }
