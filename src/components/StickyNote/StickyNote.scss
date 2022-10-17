@@ -2,7 +2,9 @@ $titleHeight: 36px;
 
 .sticky-note {
   &-container {
-    position: relative;
+    position: absolute;
+    top: 5%;
+    left: 5%;
     background-color: white;
     width: 240px;
     cursor: pointer;

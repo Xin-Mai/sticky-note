@@ -35,11 +35,16 @@ class Clock extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     return (
-      <div style={{
-        position: 'fixed',
-        margin: 'auto',
-      }}>
-        <h1>{ this.state.date.toLocaleTimeString() }</h1>
+      <div>
+        <h1
+          style={{
+            fontSize: '3em',
+            fontFamily: 'Menlo',
+            margin: '0.3em',
+          }}
+        >
+          { this.state.date.toLocaleTimeString() }
+        </h1>
       </div>
     )
   }

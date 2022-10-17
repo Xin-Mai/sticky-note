@@ -4,18 +4,22 @@ import { useState } from 'react';
 const menuItems = [
   {
     icon: '🙌',
+    id: 'done',
     text: 'Done',
   },
   {
     icon: '🗑️',
+    id: 'delete',
     text: 'Delete',
   },
   {
     icon: '🎨',
+    id: 'color',
     text: 'Color',
   },
   {
     icon: '©️',
+    id: 'copy',
     text: 'Copy',
   },
 ];
@@ -26,6 +30,7 @@ interface Props {
   isOpen: boolean;
   anchorEl: HTMLButtonElement | null;
   onClose(): void;
+  handleClick(event: string, params?: any): void;
 }
 
 export default function NoteMenu(props: Props) {
@@ -51,8 +56,8 @@ export default function NoteMenu(props: Props) {
       { menuItems.map(v => {
         return (
           <MenuItem
-            key={ v.text }
-            onClick={ v.text === 'Color' ? handleOpenCascade : () => {}}
+            key={ v.id }
+            onClick={ v.text === 'Color' ? handleOpenCascade : () => props.handleClick(v.id)}
           >
             <ListItemText style={{ width: '40px' }}>{ v.icon }</ListItemText>
             <ListItemText style={{ textAlign: 'left', width: '140px' }}>{ v.text }</ListItemText>

@@ -9,6 +9,11 @@ interface Props {
   title?: string;
   content?: string;
   color?: string;
+  id: number | string;
+  x?: number;
+  y?: number;
+  handleDelete(id: string | number): void; 
+  handleCopy(id: string | number, title: string, content: string, color: string): void;
 }
 
 interface State {
@@ -33,6 +38,7 @@ const theme = createTheme({
 
 class StickyNote extends React.Component<Props, State> {
   private moreButton: React.RefObject<HTMLButtonElement>;
+  private nodeRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: Props) {
     super(props);
@@ -45,6 +51,7 @@ class StickyNote extends React.Component<Props, State> {
       firstFoucus: '',
     };
     this.moreButton = React.createRef();
+    this.nodeRef = React.createRef();
   }
 
   handleChange(newVal: any) {
@@ -53,6 +60,18 @@ class StickyNote extends React.Component<Props, State> {
 
   handleMenuOpen = () => {
     this.handleChange({ isMenuOpen: !this.state.isMenuOpen });
+  }
+
+  handleMenuClick = (event: string, ...params: any) => {
+    switch (event) {
+      case 'delete':
+        this.props.handleDelete(this.props.id);
+        break;
+      case 'copy':
+        this.props.handleCopy(this.props.id, this.state.title, this.state.content, this.state.color);
+        break;
+    }
+    this.setState({ isMenuOpen: false });
   }
 
   handleEditable = (e: React.MouseEvent) => {
@@ -76,8 +95,13 @@ class StickyNote extends React.Component<Props, State> {
     };
 
     return (
-      <Draggable defaultPosition={{ x:0, y:0}}>
+      <Draggable
+        nodeRef={ this.nodeRef }
+        bounds="parent"
+        defaultPosition={{x: this.props.x || 0, y: this.props.y || 0}}
+      >
         <div className="sticky-note-container"
+          ref={ this.nodeRef }
           onDoubleClickCapture={ this.handleEditable }
           onBlur={ this.handleBlur }
         >
@@ -101,7 +125,7 @@ class StickyNote extends React.Component<Props, State> {
             <div className="sticky-note-title" style={ titleColor }>
               <Input
                 id="title-input"
-                inputRef={ (input: HTMLInputElement) => input && input.id === this.state.firstFoucus && input.focus() }
+                inputRef={(input: HTMLInputElement) => input && input.id === this.state.firstFoucus && input.focus()}
                 disabled={ !this.state.editable }
                 value={ this.state.title }
                 className="sticky-note-title-input"
@@ -112,7 +136,7 @@ class StickyNote extends React.Component<Props, State> {
             </div>
             <TextField
               id="content-input"
-              inputRef={ (input: HTMLTextAreaElement) => input && input.id === this.state.firstFoucus && input.focus() }
+              inputRef={(input: HTMLTextAreaElement) => input && input.id === this.state.firstFoucus && input.focus()}
               disabled={ !this.state.editable }
               value={ this.state.content }
               className="sticky-note-content"
@@ -128,6 +152,7 @@ class StickyNote extends React.Component<Props, State> {
           <NoteMenu
             isOpen={ this.state.isMenuOpen }
             anchorEl={ this.moreButton.current }
+            handleClick={ this.handleMenuClick }
             onClose={ this.handleMenuOpen }
           />
         </div>
