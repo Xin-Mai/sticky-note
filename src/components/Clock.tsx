@@ -1,53 +1,53 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import CircularProgress, { Status } from './CircularProgress/CircularProgress';
 
-interface Props {
-  [key: string]: any
-}
+export default function Clock() {
+  const [date, setDate] = useState<Date>(new Date());
+  const [status, setStatus] = useState<Status>('setting');
+  const timerID = useRef<undefined | NodeJS.Timer>();
 
-interface State {
-  date: Date
-}
-
-class Clock extends React.Component<Props, State> {
-  timerID: undefined | NodeJS.Timer;
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      date: new Date(),
-    };
+  const tick = (): void => {
+    setDate(new Date());
   }
 
-  tick() {
-    this.setState({ date: new Date() });
+  const onStatusChange = (s: Status) => {
+    setStatus(s);
   }
 
-  componentDidMount(): void {
-    this.timerID = setInterval(
-      () => this.tick(),
-      1000,
+  useEffect(() => {
+    timerID.current = setInterval(
+      () => tick(),
+      1000
     );
-  }
+    
+    return () => {
+      clearInterval(timerID.current);
+      timerID.current = undefined;
+    }
+  }, [])
 
-  componentWillUnmount(): void {
-    clearInterval(this.timerID);
-  }
-
-  render(): React.ReactNode {
-    return (
-      <div>
-        <h1
-          style={{
-            fontSize: '3em',
-            fontFamily: 'Menlo',
-            margin: '0.3em',
-          }}
-        >
-          { this.state.date.toLocaleTimeString() }
-        </h1>
-      </div>
-    )
-  }
-}
-
-export default Clock;
+  return (
+    <div>
+      <CircularProgress
+        size={400}
+        status={status}
+        onStatusChange={onStatusChange}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+      <h1
+        style={{
+          fontSize: '3em',
+          fontFamily: 'Menlo',
+          margin: '0.3em',
+        }}
+      >
+        { date.toLocaleTimeString() }
+      </h1>
+    </div>
+  )
+};
