@@ -29,6 +29,13 @@ export default function CircularProgress(props: Props) {
   const slotCanvas = useRef<null | HTMLCanvasElement>(null);
   const dragging = useRef<boolean>(false);
 
+  // update when parent change props
+  useEffect(() => {
+    if (props.initVal !== undefined) {
+      setInitVal(props.initVal);
+    }
+  }, [props.initVal]);
+
   // get canvas element
   useEffect(() => {
     canvas.current = document.getElementById(id) as HTMLCanvasElement;

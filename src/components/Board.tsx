@@ -15,7 +15,8 @@ interface IStickyNote {
 }
 
 const buttonStyles = {
-  color: '#61dafb',
+  // color: '#61dafb',
+  // position: 'fixed',
 };
 
 const myTheme: Theme = createTheme({

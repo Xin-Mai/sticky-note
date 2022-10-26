@@ -1,6 +1,6 @@
-import { PlayCircleFilledOutlined, StopCircleOutlined } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import { HourglassBottomOutlined, HourglassEmptyOutlined } from '@mui/icons-material';
+import { Button } from '@mui/material';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CircularProgress, { Status } from './CircularProgress/CircularProgress';
 
 export default function Clock() {
@@ -12,15 +12,25 @@ export default function Clock() {
   const timerID = useRef<undefined | NodeJS.Timer>();
   const curAngel = useRef<number>(0);
 
-  const tick = (): void => {
-    if (status === 'counting') {
-      const countDown = new Date(date);
-      countDown.setTime(date.getTime() - 1000);
-      setDate(countDown);
-    } else {
-      setDate(new Date());
-    }
-  }
+  const tick = useCallback(
+    (): void => {
+      if (status === 'counting') {
+        const angel = 6.28 / 10800;
+
+        if (curAngel.current >= angel  && date.toLocaleTimeString() !== '00:00:00') {
+          const countDown = new Date(date);
+          countDown.setTime(date.getTime() - 1000);
+          setDate(countDown);
+        }
+
+        curAngel.current = curAngel.current >= angel ? curAngel.current - angel : 0;
+        setProgressAngel(curAngel.current);
+      } else {
+        setDate(new Date());
+      }
+    },
+    [date, status]
+  )
 
   const onStatusChange = (s: Status) => {
     setStatus(s);
@@ -56,16 +66,22 @@ export default function Clock() {
     }
   }, [isTicking, tick]);
 
+  const manageCountDown = () => {
+    status === 'setting' ? startCountDown() : stopCountDown();
+  };
+
   const startCountDown = () => {
-    setStatus('counting');
-    setIsTicking(true);
-    setProgressAngel(curAngel.current);
+    if (curAngel.current > 0) {
+      setStatus('counting');
+      setIsTicking(true);
+    }
   };
 
   const stopCountDown = () => {
-    setStatus('setting');
+    curAngel.current = 0;
     setProgressAngel(0);
-    // setIsTicking(false);
+    setDate(new Date());
+    setStatus('setting');
   };
 
   return (
@@ -92,15 +108,15 @@ export default function Clock() {
       >
         { date.toLocaleTimeString() }
       </h1>
-      {
-        status === 'setting' &&
-        <IconButton color="primary" onClick={startCountDown}>
-          <PlayCircleFilledOutlined />
-        </IconButton>
-      }
-      <IconButton color="primary" onClick={stopCountDown}>
-        <StopCircleOutlined />
-      </IconButton>
+      <Button
+        variant="outlined"
+        size="large"
+        startIcon={ status === 'setting' ? <HourglassEmptyOutlined /> : <HourglassBottomOutlined/>}
+        className="board-add"
+        onClick={manageCountDown} 
+      >
+        { status === 'setting' ? 'START' : 'QUIT'}
+      </Button>
     </div>
   )
 };
