@@ -1,6 +1,6 @@
 import { Button, createTheme, Theme, ThemeProvider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import Clock from './Clock';
+import Clock from './Clock/Clock';
 import StickyNote from './StickyNote/StickyNote';
 import './Board.scss';
 import { useState } from 'react';
@@ -16,13 +16,18 @@ interface IStickyNote {
 
 const buttonStyles = {
   // color: '#61dafb',
-  // position: 'fixed',
+  position: 'fixed',
+  top: 0,
+  right: 0,
 };
 
 const myTheme: Theme = createTheme({
   palette: {
     primary: {
       main: '#61dafb',
+    },
+    action: {
+      disabled: 'rgba(97,218,251, 0.6)'
     }
   }
 });
@@ -62,21 +67,21 @@ export default function Board() {
 
   return (
     <div className="board">
-      <div className="board-center">
-        <ThemeProvider theme={ myTheme }>
+      <ThemeProvider theme={ myTheme }>
+        <div className="board-center">
           <Clock />
-          <Button
+        </div>
+        <Button
             sx={ buttonStyles }
-            variant="outlined"
+            variant="text"
             size="large"
             startIcon={ <AddIcon /> }
             className="board-add"
             onClick={() => addStickyNote()} 
           >
-              Add
-          </Button>
-        </ThemeProvider>
-      </div>
+              Add TASK
+        </Button>
+      </ThemeProvider>
       {
         stickyNotes.map(note => {
           return (

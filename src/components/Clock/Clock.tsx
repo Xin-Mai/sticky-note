@@ -1,7 +1,10 @@
-import { HourglassBottomOutlined, HourglassEmptyOutlined } from '@mui/icons-material';
+import { HourglassBottomOutlined, HourglassEmptyOutlined, ThumbUpOffAltOutlined } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import CircularProgress, { Status } from './CircularProgress/CircularProgress';
+import CircularProgress from '../CircularProgress/CircularProgress';
+import ClockSwitch from './ClockSwitch';
+
+export type Status = 'setting' | 'counting';
 
 export default function Clock() {
   const [date, setDate] = useState<Date>(new Date());
@@ -9,27 +12,27 @@ export default function Clock() {
   const [isTicking, setIsTicking] = useState<boolean>(true);
   const [progressAngel, setProgressAngel] = useState<number>(0);
 
+  const [isBasicClock, setIsBasicClock] = React.useState(true);
+
   const timerID = useRef<undefined | NodeJS.Timer>();
-  const curAngel = useRef<number>(0);
+  // const curAngel = useRef<number>(0);
 
   const tick = useCallback(
     (): void => {
       if (status === 'counting') {
         const angel = 6.28 / 10800;
 
-        if (curAngel.current >= angel  && date.toLocaleTimeString() !== '00:00:00') {
+        if (progressAngel >= angel  && date.toLocaleTimeString() !== '00:00:00') {
           const countDown = new Date(date);
           countDown.setTime(date.getTime() - 1000);
           setDate(countDown);
         }
-
-        curAngel.current = curAngel.current >= angel ? curAngel.current - angel : 0;
-        setProgressAngel(curAngel.current);
-      } else {
+        setProgressAngel(progressAngel >= angel ? progressAngel - angel : 0);
+      } else if (isBasicClock){
         setDate(new Date());
       }
     },
-    [date, status]
+    [date, isBasicClock, progressAngel, status]
   )
 
   const onStatusChange = (s: Status) => {
@@ -37,7 +40,8 @@ export default function Clock() {
   }
 
   const setTime = (angel: number) => {
-    curAngel.current = angel;
+    // curAngel.current = angel;
+    setProgressAngel(angel);
 
     if (isTicking) {
       setIsTicking(false);
@@ -49,7 +53,6 @@ export default function Clock() {
     }
     const countDown = new Date();
     countDown.setHours(Math.floor(secs / 3600), Math.floor(secs % 3600 / 60), secs % 60);
-    console.log('[setTime]', countDown.toLocaleTimeString());
     setDate(countDown);
   }
 
@@ -66,22 +69,37 @@ export default function Clock() {
     }
   }, [isTicking, tick]);
 
+  const handleClockModeChange = () => {
+    if (isBasicClock) {
+      clearCountDown();
+    } else {
+      setDate(new Date());
+    }
+    setIsBasicClock(!isBasicClock);
+  }
+
+  const clearCountDown = () => {
+    // curAngel.current = 0;
+    setProgressAngel(0);
+    const clearTime = new Date();
+    clearTime.setHours(0, 0, 0);
+    setDate(clearTime);
+    setStatus('setting');
+  }
+
   const manageCountDown = () => {
     status === 'setting' ? startCountDown() : stopCountDown();
   };
 
   const startCountDown = () => {
-    if (curAngel.current > 0) {
+    if (progressAngel > 0) {
       setStatus('counting');
       setIsTicking(true);
     }
   };
 
   const stopCountDown = () => {
-    curAngel.current = 0;
-    setProgressAngel(0);
-    setDate(new Date());
-    setStatus('setting');
+    clearCountDown();
   };
 
   return (
@@ -89,6 +107,7 @@ export default function Clock() {
       <CircularProgress
         size={500}
         status={status}
+        showButton={!isBasicClock}
         initVal={progressAngel}
         onStatusChange={onStatusChange}
         onInitValChange={setTime}
@@ -98,6 +117,11 @@ export default function Clock() {
           left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
+      />
+      <ClockSwitch
+        disabled={!isBasicClock && status === 'counting'}
+        checked={!isBasicClock}
+        onChange={handleClockModeChange}
       />
       <h1
         style={{
@@ -110,12 +134,16 @@ export default function Clock() {
       </h1>
       <Button
         variant="outlined"
+        disabled={ status === 'setting' && progressAngel === 0}
+        sx={{
+          visibility: isBasicClock ? 'hidden': 'default',
+        }}
         size="large"
-        startIcon={ status === 'setting' ? <HourglassEmptyOutlined /> : <HourglassBottomOutlined/>}
+        startIcon={ status === 'setting' ? <HourglassEmptyOutlined /> : progressAngel === 0 ? <ThumbUpOffAltOutlined/>: <HourglassBottomOutlined/>}
         className="board-add"
         onClick={manageCountDown} 
       >
-        { status === 'setting' ? 'START' : 'QUIT'}
+        { status === 'setting' ? 'START' : progressAngel === 0 ? 'FINISHI' : 'QUIT'}
       </Button>
     </div>
   )

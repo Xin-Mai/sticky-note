@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { hexToRGBA } from '../../uitl';
+import { Status } from '../Clock/Clock';
 import './CircularProgress.scss';
-
-export type Status = 'setting' | 'counting';
 
 interface Props {
   id?: string;
@@ -11,12 +10,13 @@ interface Props {
   color?: string;
   status?: Status;
   style?: React.CSSProperties,
+  showButton?: boolean,
   onStatusChange?(status: Status): void;
   onInitValChange?(val: number): void;
 }
 
 export default function CircularProgress(props: Props) {
-  const { id = 'circular-progress', size = 200, color = '#61dafb', status = 'setting' } = props;
+  const { id = 'circular-progress', size = 200, color = '#61dafb', status = 'setting', showButton = true } = props;
   const slotId = id + '-slot';
   const lineWidth = size / 40;
   const [initVal, setInitVal] = useState(props.initVal || 0);
@@ -95,7 +95,7 @@ export default function CircularProgress(props: Props) {
     // draw ring
     useEffect(() => {
       const ctx = canvasCtx;
-      if (!ctx) return;
+      if (!ctx || initVal === 0) return;
       const radius = size / 2;
   
       ctx.lineWidth = lineWidth;
@@ -111,7 +111,7 @@ export default function CircularProgress(props: Props) {
   // draw button
   useEffect(() => {
     const ctx = canvasCtx;
-    if (status !=='setting' || !ctx) return;
+    if (!showButton || status !=='setting' || !ctx) return;
     ctx.save();
     // move the (0, 0) to the center of canvas
     ctx.translate(size / 2, size / 2);
@@ -132,7 +132,7 @@ export default function CircularProgress(props: Props) {
       buttonPath.current = null;
       canvasCtx?.clearRect(0, 0, size, size);
     };
-  }, [canvasCtx, color, initVal, lineWidth, size, status]);
+  }, [canvasCtx, color, initVal, lineWidth, showButton, size, status]);
 
   // const test = (x: number, y: number) => {
   //   const path = new Path2D();
@@ -185,7 +185,6 @@ export default function CircularProgress(props: Props) {
     val = parseFloat(val.toFixed(2));
     val = val === 6.27 ? 6.28 : val === 0.01 ? 0 : val;
     if (val !== initVal && ((dragging.current && Math.abs(val - initVal) <= 0.1) || !dragging.current)) {
-      console.log('udateVal', val);
       setInitVal(val)
       if (props.onInitValChange) {
         props.onInitValChange(val);
@@ -210,7 +209,7 @@ export default function CircularProgress(props: Props) {
   }
 
   const handleMouseDown = (e: React.MouseEvent): void => {
-    if (props.status === 'counting') return;
+    if (props.status !== 'setting') return;
     const {x, y} = getCoordination(e);
     if (pointInButton(x, y)) {
       dragging.current = true;
